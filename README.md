@@ -104,26 +104,24 @@ Flags:
 
 Auto-responsive card grid with per-node GPU utilization bars, memory usage, GPU heatmap, and inline process summary:
 
-```
-╭─┤ GPU Cluster Monitor ├── 4 nodes │ 32 GPUs │ ⚡73% │ 💾285G ── s:sort /:search ?:help ──╮
-│                                                                                           │
-│  ╭─┤ 🔥 visko-1 ├──────────────╮  ╭─┤ ⚡ visko-2 ├──────────────╮                        │
-│  │ Util ██████████████████░░ 87%│  │ Util █████████████████░░░ 74%│                        │
-│  │ Mem  ████████████░░░░░░ 150G │  │ Mem  ███████████░░░░░░░ 146G│                        │
-│  │ GPU  ████████ 8x A100-SXM   │  │ GPU  ████████ 8x A100-SXM   │                        │
-│  │ alice 0-7 150G train.py      │  │ bob   0-7 146G pretrain.py   │                        │
-│  ╰──────────────────────────────╯  ╰──────────────────────────────╯                        │
-│  ╭─┤ ✓ visko-3 ├───────────────╮  ╭─┤ ✗ visko-4 ├───────────────╮                        │
-│  │ Util ████░░░░░░░░░░░░░░ 12% │  │                              │                        │
-│  │ Mem  ██░░░░░░░░░░░░░░░  12G │  │  ⚠ SSH connection timed out  │                        │
-│  │ GPU  ████████ 8x A100-SXM   │  │                              │                        │
-│  ╰──────────────────────────────╯  ╰──────────────────────────────╯                        │
-╰───────────────────────────────────────────────────────────────────────────────────────────╯
-```
+![node-monitor interactive TUI showing high-load, active, idle, and offline GPU nodes](docs/assets/node-monitor-tui.svg)
+
+*Rendered from node-monitor's actual Bubble Tea/Lip Gloss UI with anonymized sample data.*
 
 Press `Enter` on a node to open the **detail panel** with per-GPU bars, full process list, and system info (load average, RAM, driver version).
 
 Node status icons reflect average GPU utilization: `🔥` >80%, `⚡` 50-80%, `✓` <50%, `✗` offline.
+
+#### Updating the screenshot
+
+After changing the TUI design, regenerate and verify the README image with:
+
+```bash
+make readme-screenshot
+make check-readme-screenshot
+```
+
+The generator uses the real TUI renderer with deterministic, anonymized sample data and a pinned version of [Freeze](https://github.com/charmbracelet/freeze).
 
 ### Static mode (`-s`)
 

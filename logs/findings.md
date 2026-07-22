@@ -188,3 +188,24 @@ nodeGrid := RenderNodeGrid(..., gridWidth, ...)
 ```
 
 The mouse handler was also updated to use matching calculations: `gridWidth = m.width - 3` and `clickX = msg.X - 2` (frame border + margin).
+
+---
+
+## Finding 8: README Screenshots Can Reuse the Real TUI Renderer
+
+**Discovery context:** The README's Interactive TUI section used a manually written Unicode diagram, so it did not show the application's real colors, gradients, spacing, or terminal styling.
+
+**Approach:** An opt-in in-package test populates the real `tui.Model` with deterministic, anonymized sample nodes, forces the Lip Gloss true-color profile, and writes the result of `Model.View()` as ANSI output. It skips unless `NODE_MONITOR_README_CAPTURE` is set, so normal test runs have no generated-file side effects.
+
+The fixture covered four representative states:
+
+- High-utilization node with two active users
+- Medium-utilization node with one active user
+- Idle online node
+- Offline node with an SSH timeout
+
+**Rendering:** `scripts/render-readme-tui.sh` uses Charmbracelet Freeze v0.2.2 to convert the ANSI output to `docs/assets/node-monitor-tui.svg`. SVG was selected instead of PNG because Freeze's raster backend did not resolve the color emoji glyphs consistently. The SVG includes a cross-platform monospace and emoji font fallback list.
+
+**Determinism:** The test replaces the dynamic header clock with `12:00:00`, while all metrics and process data come from fixed fixtures. Two consecutive `make readme-screenshot` runs produced the same SHA-256 hash. `make check-readme-screenshot` renders into a temporary directory and compares the result without modifying the tracked asset.
+
+**Verification:** The final 120-column by 15-line capture was rendered at full width in a browser. Card borders, gradient bars, emoji, process summaries, and the right edge of the outer frame were all visible and aligned.

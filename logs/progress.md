@@ -86,3 +86,17 @@ User reported two more issues:
 | `internal/ssh/parse.go` | New `ListWithProcessesCommand()` |
 | `internal/ssh/query.go` | `QueryNode` now fetches processes |
 | `cmd/root.go` | Removed `--processes` flag |
+
+### Phase 5: README TUI Capture (2026-07-22)
+
+1. Confirmed that the README's Interactive TUI preview was a hand-written code block.
+2. Created a temporary capture harness that fed anonymized sample data into the real Bubble Tea/Lip Gloss `Model.View()` renderer.
+3. Captured a 120-column by 15-line true-color ANSI frame with high-load, active, idle, and offline nodes.
+4. Rendered the frame to `docs/assets/node-monitor-tui.svg` with Charmbracelet Freeze v0.2.2.
+5. Added cross-platform monospace and emoji font fallbacks to the generated SVG.
+6. Verified the complete SVG at full width in a browser, including the rightmost card and frame border.
+7. Replaced the README's Unicode mockup with the real rendered image and an explanatory caption.
+8. Promoted the capture harness to an opt-in test and added `scripts/render-readme-tui.sh` with Freeze pinned to v0.2.2.
+9. Added `make readme-screenshot` and `make check-readme-screenshot`, plus README regeneration instructions.
+10. Normalized the header clock to `12:00:00`; two consecutive renders produced the same SHA-256 hash.
+11. Verified with `go test ./...`, `xmllint --noout`, screenshot freshness checks, README asset-path checks, and `git diff --check`.
