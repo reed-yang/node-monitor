@@ -100,3 +100,15 @@ User reported two more issues:
 9. Added `make readme-screenshot` and `make check-readme-screenshot`, plus README regeneration instructions.
 10. Normalized the header clock to `12:00:00`; two consecutive renders produced the same SHA-256 hash.
 11. Verified with `go test ./...`, `xmllint --noout`, screenshot freshness checks, README asset-path checks, and `git diff --check`.
+
+### Phase 6: Static Mode README Capture (2026-07-22)
+
+1. Confirmed that Static mode uses the independent `cmd.renderStatic` output path.
+2. Extracted `renderStaticTo(io.Writer, ...)` while preserving the stdout wrapper used by the CLI.
+3. Moved the anonymized screenshot nodes into `internal/testfixture` for both display modes.
+4. Added an opt-in static capture test with the same normalized `12:00:00` clock.
+5. Extended `scripts/render-readme-tui.sh` to generate and check both README SVG assets.
+6. Replaced the Static mode Unicode mockup with `docs/assets/node-monitor-static.svg`.
+7. Visually verified the static SVG in a browser with no clipping or font fallback issues.
+8. Confirmed consecutive renders preserve both SVG SHA-256 hashes byte-for-byte.
+9. Passed `go test ./...`, both screenshot freshness checks, shell validation, XML validation, and `git diff --check`.

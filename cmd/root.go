@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -123,10 +124,14 @@ func run(cmd *cobra.Command, args []string) error {
 }
 
 func renderStatic(results []model.NodeStatus, interval float64, width int, showProcs bool) {
+	renderStaticTo(os.Stdout, results, interval, width, showProcs)
+}
+
+func renderStaticTo(output io.Writer, results []model.NodeStatus, interval float64, width int, showProcs bool) {
 	// Header line
 	header := components.RenderHeader(results, interval, width)
-	fmt.Println(header)
-	fmt.Println()
+	fmt.Fprintln(output, header)
+	fmt.Fprintln(output)
 
 	// Node summaries (one line each)
 	for _, node := range results {
@@ -136,7 +141,7 @@ func renderStatic(results []model.NodeStatus, interval float64, width int, showP
 				errMsg = *node.Error
 			}
 			name := lipgloss.NewStyle().Foreground(components.ColorRed).Render("✗ " + node.Hostname)
-			fmt.Printf(" %-16s  %s\n", name,
+			fmt.Fprintf(output, " %-16s  %s\n", name,
 				lipgloss.NewStyle().Foreground(components.ColorDim).Render("⚠ "+errMsg))
 			continue
 		}
@@ -151,13 +156,13 @@ func renderStatic(results []model.NodeStatus, interval float64, width int, showP
 			Render(fmt.Sprintf("%s/%s", model.FormatMemory(node.TotalMemoryUsed()), model.FormatMemory(node.TotalMemory())))
 
 		name := lipgloss.NewStyle().Bold(true).Render(icon + " " + node.Hostname)
-		fmt.Printf(" %-16s  %s %s  %s  %s  %s\n",
+		fmt.Fprintf(output, " %-16s  %s %s  %s  %s  %s\n",
 			name, utilBar, utilPct, memStr, heatmap, node.GPUModelSummary())
 	}
 
 	// Processes
 	if showProcs {
-		fmt.Println()
+		fmt.Fprintln(output)
 
 		// Check if any processes
 		hasProcs := false
@@ -169,8 +174,8 @@ func renderStatic(results []model.NodeStatus, interval float64, width int, showP
 		}
 
 		if hasProcs {
-			fmt.Println(lipgloss.NewStyle().Bold(true).Foreground(components.ColorFg).Render("Processes:"))
-			fmt.Println(components.RenderProcessTable(results, width, 0))
+			fmt.Fprintln(output, lipgloss.NewStyle().Bold(true).Foreground(components.ColorFg).Render("Processes:"))
+			fmt.Fprintln(output, components.RenderProcessTable(results, width, 0))
 		}
 	}
 }

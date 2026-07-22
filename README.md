@@ -112,34 +112,24 @@ Press `Enter` on a node to open the **detail panel** with per-GPU bars, full pro
 
 Node status icons reflect average GPU utilization: `🔥` >80%, `⚡` 50-80%, `✓` <50%, `✗` offline.
 
-#### Updating the screenshot
+### Static mode (`-s`)
 
-After changing the TUI design, regenerate and verify the README image with:
+Single snapshot printed to stdout, suitable for piping and scripting:
+
+![node-monitor static mode output showing GPU node summaries and processes](docs/assets/node-monitor-static.svg)
+
+*Rendered from node-monitor's actual static output with the same anonymized sample data.*
+
+#### Updating the screenshots
+
+After changing either display mode, regenerate and verify both README images with:
 
 ```bash
 make readme-screenshot
 make check-readme-screenshot
 ```
 
-The generator uses the real TUI renderer with deterministic, anonymized sample data and a pinned version of [Freeze](https://github.com/charmbracelet/freeze).
-
-### Static mode (`-s`)
-
-Single snapshot printed to stdout, suitable for piping and scripting:
-
-```
-GPU Cluster Monitor │ 4 nodes │ 32 GPUs │ ⚡73% │ 💾285G │ 2026-04-13 15:04:05
-
- 🔥 visko-1   ██████████████████░░  87%  150G/638G  ████████  8x A100-SXM
- ⚡ visko-2   █████████████████░░░  74%  146G/638G  ████████  8x A100-SXM
- ✓  visko-3   ████░░░░░░░░░░░░░░░░  12%   12G/638G  ████████  8x A100-SXM
- ✗  visko-4                         ⚠ SSH connection timed out
-
-Processes:
- USER     NODE      GPU    MEM      CMD
- alice    visko-1   0-7   150.1G    train.py
- bob      visko-2   0-7   146.3G    pretrain.py
-```
+The generator uses the real interactive and static renderers with deterministic, anonymized sample data and a pinned version of [Freeze](https://github.com/charmbracelet/freeze).
 
 ## Configuration
 

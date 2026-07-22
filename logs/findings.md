@@ -209,3 +209,15 @@ The fixture covered four representative states:
 **Determinism:** The test replaces the dynamic header clock with `12:00:00`, while all metrics and process data come from fixed fixtures. Two consecutive `make readme-screenshot` runs produced the same SHA-256 hash. `make check-readme-screenshot` renders into a temporary directory and compares the result without modifying the tracked asset.
 
 **Verification:** The final 120-column by 15-line capture was rendered at full width in a browser. Card borders, gradient bars, emoji, process summaries, and the right edge of the outer frame were all visible and aligned.
+
+---
+
+## Finding 9: Static Mode Needs Its Own Renderer Capture
+
+**Discovery context:** Replacing the Interactive TUI mockup did not affect the separate hand-written Static mode (`-s`) example in the README. Static output is produced by `cmd.renderStatic`, not by the Bubble Tea model.
+
+**Approach:** `renderStaticTo` now accepts an `io.Writer`, while the existing `renderStatic` wrapper still writes to `os.Stdout`. This preserves CLI behavior and lets an opt-in test capture the exact static renderer without redirecting process-wide stdout.
+
+Both capture tests use `internal/testfixture.ReadmeNodes()`, so the interactive and static screenshots always share the same anonymized node, GPU, process, and error data. The generation script renders and freshness-checks both SVG assets in one command.
+
+**Verification:** The static SVG was inspected in a browser. Header statistics, node summaries, utilization and memory colors, the offline error, process table, emoji, and rightmost content were all visible without clipping.
