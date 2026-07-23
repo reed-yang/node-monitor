@@ -221,3 +221,23 @@ The fixture covered four representative states:
 Both capture tests use `internal/testfixture.ReadmeNodes()`, so the interactive and static screenshots always share the same anonymized node, GPU, process, and error data. The generation script renders and freshness-checks both SVG assets in one command.
 
 **Verification:** The static SVG was inspected in a browser. Header statistics, node summaries, utilization and memory colors, the offline error, process table, emoji, and rightmost content were all visible without clipping.
+
+---
+
+## Finding 10: Agent Onboarding Needs a Node Identity Contract
+
+**Discovery context:** A generic request to "configure hostnames and IPs" leaves an agent free to duplicate topology in multiple files, use transient IP addresses as display names, or change server hostnames unnecessarily.
+
+**Contract:** node-monitor's node string is both its display identity and the SSH lookup key. The stable Slurm node name or SSH alias is therefore the canonical node ID. Network routing remains an SSH concern:
+
+| Layer | Value | Example |
+|---|---|---|
+| node-monitor / Slurm / SSH alias | Canonical node ID | `gpu-01` |
+| SSH `HostName` | Routable FQDN or IP | `gpu-01.cluster.example` or `10.20.0.11` |
+| Remote operating system | Existing hostname | No onboarding change |
+
+When Slurm discovery is desired, the top-level `nodes` key must be absent because configured nodes take precedence over `sinfo`. When Slurm is unavailable, the config should contain stable SSH aliases, while address mappings remain in OpenSSH config.
+
+**Implementation constraint:** The current Go SSH client consumes `HostName`, `User`, `Port`, and `IdentityFile` from OpenSSH config but does not execute `ProxyJump` or `ProxyCommand`. Agent verification must therefore use node-monitor itself, not treat a successful system `ssh` command through a bastion as sufficient proof.
+
+**Documentation design:** The README contains a short human-to-agent delegation prompt. The detailed, version-controlled procedure lives in `docs/agent-setup.md`, while root `AGENTS.md` routes both operator and contributor agents to the correct instructions.

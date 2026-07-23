@@ -8,6 +8,16 @@ A fast, interactive terminal dashboard for monitoring GPU utilization across Slu
 
 ## Installation
 
+### Install with your coding agent
+
+Copy the prompt below into an agent that has terminal access to the server where you want to run node-monitor:
+
+```text
+Install and configure node-monitor from https://github.com/Reed-yang/node-monitor on this server. Read and follow docs/agent-setup.md in the repository for cluster discovery, configuration, and verification.
+```
+
+The agent runbook is also available in the repository at [`docs/agent-setup.md`](docs/agent-setup.md). It defines the safe discovery, SSH mapping, configuration, and acceptance process rather than relying on the agent to invent cluster topology.
+
 ### Pre-built binaries (recommended)
 
 Download from [GitHub Releases](https://github.com/Reed-yang/node-monitor/releases/latest):
@@ -83,7 +93,7 @@ Flags:
   -h, --help             Show help
 ```
 
-**Node resolution order:** `--nodes` flag > `--group` flag > Slurm auto-detection (`sinfo`).
+**Node resolution order:** `--nodes` flag > `--group` flag > configured `nodes` > Slurm auto-detection (`sinfo`).
 
 ## TUI keybindings
 
@@ -160,6 +170,29 @@ command_timeout = 10    # Remote command timeout (seconds)
 A sample config is included at `configs/default.toml`.
 
 **SSH key resolution:** config `identity_file` > `~/.ssh/config` IdentityFile > `~/.ssh/id_ed25519` / `id_rsa` / `id_ecdsa` > SSH agent.
+
+### Cluster discovery and node identity
+
+node-monitor treats a node value as an SSH destination, not as a separate hostname/IP record. Keep one stable canonical name across Slurm, SSH, and node-monitor:
+
+| Concept | Example | Configuration location |
+|---|---|---|
+| Canonical node ID | `gpu-01` | Slurm node name, SSH `Host`, and `nodes` / `groups` |
+| Routable address | `gpu-01.cluster.example` or `10.20.0.11` | SSH `HostName` when the canonical name is not directly resolvable |
+| Remote OS hostname | `gpu-01.internal` | Existing server configuration; node-monitor does not change it |
+
+For a Slurm cluster, omit `nodes` so `sinfo` discovers the current inventory. If Slurm returns `gpu-01` but that name is not resolvable from the management host, keep `gpu-01` as the node ID and add an SSH mapping:
+
+```sshconfig
+Host gpu-01
+    HostName 10.20.0.11
+    User cluster-user
+    IdentityFile ~/.ssh/id_ed25519
+```
+
+Without Slurm, put stable SSH aliases in `nodes` and map them to FQDNs or IPs in SSH config. Prefer aliases over literal IPs so addresses can change without changing groups or display names.
+
+Run node-monitor from a login/controller or management host with direct reachability to the GPU nodes. The current Go SSH client reads `HostName`, `User`, `Port`, and `IdentityFile`, but it does not execute `ProxyJump` or `ProxyCommand`; see the [agent setup runbook](docs/agent-setup.md) for the full onboarding and verification contract.
 
 ## Architecture
 
