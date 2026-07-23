@@ -112,3 +112,15 @@ User reported two more issues:
 7. Visually verified the static SVG in a browser with no clipping or font fallback issues.
 8. Confirmed consecutive renders preserve both SVG SHA-256 hashes byte-for-byte.
 9. Passed `go test ./...`, both screenshot freshness checks, shell validation, XML validation, and `git diff --check`.
+
+### Phase 7: Agent-native installation and cluster onboarding (2026-07-22)
+
+1. Audited the actual node-resolution order, Slurm discovery command, SSH config fields, release assets, and user configuration format.
+2. Defined a canonical node identity model: Slurm node name or stable SSH alias for identity; SSH `HostName` for the routable FQDN/IP.
+3. Added a copyable human-to-agent installation prompt to the README.
+4. Added `docs/agent-setup.md` with read-only inspection, three discovery modes, user-scoped installation, SSH/config merge rules, stop conditions, and end-to-end acceptance checks.
+5. Added root `AGENTS.md` to route server onboarding agents to the runbook and document contributor commands and architecture boundaries.
+6. Clarified node identity and Slurm precedence in `README.md` and `configs/default.toml`.
+7. Explicitly documented the current lack of `ProxyJump` / `ProxyCommand` support so agents cannot report a false-positive setup through system SSH.
+8. Verified the latest GitHub release remains `v0.1.0` and the existing release installation entry is valid.
+9. Passed `go test ./...`, `go vet ./...`, local documentation target checks, and `git diff --check`.

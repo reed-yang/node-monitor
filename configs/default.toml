@@ -1,7 +1,9 @@
 # Node Monitor configuration
 # Copy to ~/.config/node-monitor/config.toml
 
-# Default node list (omit to auto-detect from Slurm)
+# Default node IDs (omit this key to auto-detect current Slurm node names)
+# Use stable SSH aliases here, not a separate hostname/IP mapping. If an alias
+# needs an explicit FQDN or IP, configure it as Host/HostName in ~/.ssh/config.
 # nodes = ["visko-1", "visko-2", "visko-3"]
 
 # Refresh interval (seconds)
@@ -23,7 +25,7 @@ command_timeout = 10  # Command execution timeout (seconds)
 # identity_file = ""  # Private key path (empty = default)
 # user = ""           # SSH username (empty = current user)
 
-# Node groups (optional)
+# Node groups (optional; entries use the same canonical node IDs as above)
 # [groups]
 # train = ["visko-1", "visko-2", "visko-3", "visko-4"]
 # inference = ["infer-1", "infer-2"]
